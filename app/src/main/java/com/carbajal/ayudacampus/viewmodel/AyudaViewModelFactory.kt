@@ -18,6 +18,9 @@ class AyudaViewModelFactory(
         if (modelClass.isAssignableFrom(MisTicketsViewModel::class.java)) {
             return MisTicketsViewModel(clienteId, repository) as T
         }
+        if (modelClass.isAssignableFrom(NuevoTicketViewModel::class.java)) {
+            return NuevoTicketViewModel(clienteId, repository) as T
+        }
         throw IllegalArgumentException("Clase ViewModel desconocida: ${modelClass.name}")
     }
 }

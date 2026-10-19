@@ -19,8 +19,10 @@ import com.carbajal.ayudacampus.AyudaApp
 import com.carbajal.ayudacampus.model.Rol
 import com.carbajal.ayudacampus.ui.cliente.LoginScreen
 import com.carbajal.ayudacampus.ui.cliente.MisTicketsScreen
+import com.carbajal.ayudacampus.ui.cliente.NuevoTicketScreen
 import com.carbajal.ayudacampus.viewmodel.AyudaViewModelFactory
 import com.carbajal.ayudacampus.viewmodel.MisTicketsViewModel
+import com.carbajal.ayudacampus.viewmodel.NuevoTicketViewModel
 import com.carbajal.ayudacampus.viewmodel.SesionViewModel
 
 @Composable
@@ -73,10 +75,34 @@ fun NavAyuda(
                 viewModel = misTicketsViewModel,
                 nombreEstudiante = nombreEstudiante,
                 onCrearTicket = {
-                    // Navegar a nuevo ticket
+                    navController.navigate(Rutas.NUEVO_TICKET)
                 },
                 onVerDetalle = {
                     // Navegar a detalle ticket
+                },
+                onIrPerfil = {
+                    // Navegar a perfil
+                }
+            )
+        }
+
+        composable(Rutas.NUEVO_TICKET) {
+            val nuevoTicketViewModel: NuevoTicketViewModel = viewModel(
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore, clienteId)
+            )
+            NuevoTicketScreen(
+                viewModel = nuevoTicketViewModel,
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onTicketEnviado = {
+                    Toast.makeText(context, "Ticket creado con éxito", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
+                },
+                onIrTickets = {
+                    navController.navigate(Rutas.MIS_TICKETS) {
+                        popUpTo(Rutas.MIS_TICKETS) { inclusive = true }
+                    }
                 },
                 onIrPerfil = {
                     // Navegar a perfil
