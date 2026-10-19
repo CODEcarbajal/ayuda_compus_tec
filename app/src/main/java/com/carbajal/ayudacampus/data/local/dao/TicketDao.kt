@@ -13,9 +13,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TicketDao {
-
-    // --- OPERACIONES DE ESCRITURA ---
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTicket(ticket: Ticket): Long
 

@@ -51,7 +51,7 @@ fun LoginScreen(
 ) {
     var rolSeleccionado by remember { mutableStateOf(Rol.CLIENTE) }
     var correo by remember { mutableStateOf("juan@campus.test") }
-    var clave by remember { mutableStateOf("123456") }
+    var clave by remember { mutableStateOf("1234") }
 
     val error by viewModel.error.collectAsState()
     val colorRol = if (rolSeleccionado == Rol.CLIENTE) ColorCliente else ColorSoporte
@@ -103,7 +103,7 @@ fun LoginScreen(
                         .clickable {
                             rolSeleccionado = Rol.CLIENTE
                             correo = "juan@campus.test"
-                            clave = "123456"
+                            clave = "1234"
                             viewModel.limpiarError()
                         }
                         .padding(vertical = 12.dp),
@@ -125,7 +125,7 @@ fun LoginScreen(
                         .clickable {
                             rolSeleccionado = Rol.ADMIN
                             correo = "soporte@campus.test"
-                            clave = "123456"
+                            clave = "admin"
                             viewModel.limpiarError()
                         }
                         .padding(vertical = 12.dp),

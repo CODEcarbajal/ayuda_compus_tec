@@ -7,12 +7,16 @@ import com.carbajal.ayudacampus.data.repository.AyudaRepository
 
 class AyudaViewModelFactory(
     private val repository: AyudaRepository,
-    private val preferenciasStore: PreferenciasStore
+    private val preferenciasStore: PreferenciasStore,
+    private val clienteId: Int = 1
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SesionViewModel::class.java)) {
             return SesionViewModel(repository, preferenciasStore) as T
+        }
+        if (modelClass.isAssignableFrom(MisTicketsViewModel::class.java)) {
+            return MisTicketsViewModel(clienteId, repository) as T
         }
         throw IllegalArgumentException("Clase ViewModel desconocida: ${modelClass.name}")
     }

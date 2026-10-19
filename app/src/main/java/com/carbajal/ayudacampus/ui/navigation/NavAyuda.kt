@@ -18,6 +18,9 @@ import androidx.navigation.compose.rememberNavController
 import com.carbajal.ayudacampus.AyudaApp
 import com.carbajal.ayudacampus.model.Rol
 import com.carbajal.ayudacampus.ui.cliente.LoginScreen
+import com.carbajal.ayudacampus.ui.cliente.MisTicketsScreen
+import com.carbajal.ayudacampus.viewmodel.AyudaViewModelFactory
+import com.carbajal.ayudacampus.viewmodel.MisTicketsViewModel
 import com.carbajal.ayudacampus.viewmodel.SesionViewModel
 
 @Composable
@@ -28,7 +31,12 @@ fun NavAyuda(
     navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
+    val app = context.applicationContext as AyudaApp
     val perfilActivo by sesionViewModel.perfilActivo.collectAsState(initial = "")
+    val usuarioActual by sesionViewModel.usuarioActual.collectAsState()
+
+    val clienteId = usuarioActual?.id ?: 1
+    val nombreEstudiante = usuarioActual?.nombre?.split(" ")?.firstOrNull() ?: "Meliton"
 
     val inicio = when (perfilActivo) {
         Rol.CLIENTE.name -> Rutas.MIS_TICKETS
@@ -58,12 +66,22 @@ fun NavAyuda(
         }
 
         composable(Rutas.MIS_TICKETS) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Pantalla de Mis Tickets (Estudiante)")
-            }
+            val misTicketsViewModel: MisTicketsViewModel = viewModel(
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore, clienteId)
+            )
+            MisTicketsScreen(
+                viewModel = misTicketsViewModel,
+                nombreEstudiante = nombreEstudiante,
+                onCrearTicket = {
+                    // Navegar a nuevo ticket
+                },
+                onVerDetalle = {
+                    // Navegar a detalle ticket
+                },
+                onIrPerfil = {
+                    // Navegar a perfil
+                }
+            )
         }
 
         composable(Rutas.PANEL_SOPORTE) {
