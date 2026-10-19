@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.carbajal.ayudacampus.data.local.entity.Comentario
 import com.carbajal.ayudacampus.data.local.entity.Ticket
+import com.carbajal.ayudacampus.data.local.relation.TicketConDetalle
 import com.carbajal.ayudacampus.model.ConteoCategoria
 import kotlinx.coroutines.flow.Flow
 
