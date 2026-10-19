@@ -12,11 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.carbajal.ayudacampus.AyudaApp
+import com.carbajal.ayudacampus.data.local.entity.Usuario
 import com.carbajal.ayudacampus.model.Rol
+import com.carbajal.ayudacampus.ui.cliente.DetalleTicketScreen
 import com.carbajal.ayudacampus.ui.cliente.LoginScreen
 import com.carbajal.ayudacampus.ui.cliente.MisTicketsScreen
 import com.carbajal.ayudacampus.ui.cliente.NuevoTicketScreen
@@ -24,6 +28,7 @@ import com.carbajal.ayudacampus.viewmodel.AyudaViewModelFactory
 import com.carbajal.ayudacampus.viewmodel.MisTicketsViewModel
 import com.carbajal.ayudacampus.viewmodel.NuevoTicketViewModel
 import com.carbajal.ayudacampus.viewmodel.SesionViewModel
+import com.carbajal.ayudacampus.viewmodel.TicketDetalleViewModel
 
 @Composable
 fun NavAyuda(
@@ -34,21 +39,21 @@ fun NavAyuda(
 ) {
     val context = LocalContext.current
     val app = context.applicationContext as AyudaApp
-    val perfilActivo by sesionViewModel.perfilActivo.collectAsState(initial = "")
-    val usuarioActual by sesionViewModel.usuarioActual.collectAsState()
+    val usuarioActualState by sesionViewModel.usuarioActual.collectAsState()
 
-    val clienteId = usuarioActual?.id ?: 1
-    val nombreEstudiante = usuarioActual?.nombre?.split(" ")?.firstOrNull() ?: "Meliton"
-
-    val inicio = when (perfilActivo) {
-        Rol.CLIENTE.name -> Rutas.MIS_TICKETS
-        Rol.ADMIN.name -> Rutas.PANEL_SOPORTE
-        else -> Rutas.LOGIN
-    }
+    val clienteId = usuarioActualState?.id ?: 1
+    val usuarioFinal = usuarioActualState ?: Usuario(
+        id = 1,
+        nombre = "Juan Pérez",
+        correo = "juan@campus.test",
+        clave = "1234",
+        rol = Rol.CLIENTE.name
+    )
+    val nombreEstudiante = usuarioFinal.nombre.split(" ").firstOrNull() ?: "Meliton"
 
     NavHost(
         navController = navController,
-        startDestination = inicio
+        startDestination = Rutas.LOGIN
     ) {
         composable(Rutas.LOGIN) {
             LoginScreen(
@@ -69,7 +74,7 @@ fun NavAyuda(
 
         composable(Rutas.MIS_TICKETS) {
             val misTicketsViewModel: MisTicketsViewModel = viewModel(
-                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore, clienteId)
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore, clienteId = clienteId)
             )
             MisTicketsScreen(
                 viewModel = misTicketsViewModel,
@@ -77,8 +82,8 @@ fun NavAyuda(
                 onCrearTicket = {
                     navController.navigate(Rutas.NUEVO_TICKET)
                 },
-                onVerDetalle = {
-                    // Navegar a detalle ticket
+                onVerDetalle = { ticketId ->
+                    navController.navigate(Rutas.crearDetalleTicket(ticketId))
                 },
                 onIrPerfil = {
                     // Navegar a perfil
@@ -88,7 +93,7 @@ fun NavAyuda(
 
         composable(Rutas.NUEVO_TICKET) {
             val nuevoTicketViewModel: NuevoTicketViewModel = viewModel(
-                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore, clienteId)
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore, clienteId = clienteId)
             )
             NuevoTicketScreen(
                 viewModel = nuevoTicketViewModel,
@@ -103,6 +108,39 @@ fun NavAyuda(
                     navController.navigate(Rutas.MIS_TICKETS) {
                         popUpTo(Rutas.MIS_TICKETS) { inclusive = true }
                     }
+                },
+                onIrPerfil = {
+                    // Navegar a perfil
+                }
+            )
+        }
+
+        composable(
+            route = Rutas.DETALLE_TICKET,
+            arguments = listOf(navArgument("ticketId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val ticketId = backStackEntry.arguments?.getInt("ticketId") ?: 1
+            val ticketDetalleViewModel: TicketDetalleViewModel = viewModel(
+                factory = AyudaViewModelFactory(
+                    repository = app.repository,
+                    preferenciasStore = app.preferenciasStore,
+                    clienteId = clienteId,
+                    ticketId = ticketId
+                )
+            )
+            DetalleTicketScreen(
+                viewModel = ticketDetalleViewModel,
+                usuarioActual = usuarioFinal,
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onIrTickets = {
+                    navController.navigate(Rutas.MIS_TICKETS) {
+                        popUpTo(Rutas.MIS_TICKETS) { inclusive = true }
+                    }
+                },
+                onIrNuevoTicket = {
+                    navController.navigate(Rutas.NUEVO_TICKET)
                 },
                 onIrPerfil = {
                     // Navegar a perfil

@@ -8,7 +8,8 @@ import com.carbajal.ayudacampus.data.repository.AyudaRepository
 class AyudaViewModelFactory(
     private val repository: AyudaRepository,
     private val preferenciasStore: PreferenciasStore,
-    private val clienteId: Int = 1
+    private val clienteId: Int = 1,
+    private val ticketId: Int = 1
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -20,6 +21,9 @@ class AyudaViewModelFactory(
         }
         if (modelClass.isAssignableFrom(NuevoTicketViewModel::class.java)) {
             return NuevoTicketViewModel(clienteId, repository) as T
+        }
+        if (modelClass.isAssignableFrom(TicketDetalleViewModel::class.java)) {
+            return TicketDetalleViewModel(ticketId, repository) as T
         }
         throw IllegalArgumentException("Clase ViewModel desconocida: ${modelClass.name}")
     }
