@@ -19,10 +19,14 @@ import com.carbajal.ayudacampus.ui.cliente.DetalleTicketScreen
 import com.carbajal.ayudacampus.ui.cliente.LoginScreen
 import com.carbajal.ayudacampus.ui.cliente.MisTicketsScreen
 import com.carbajal.ayudacampus.ui.cliente.NuevoTicketScreen
+import com.carbajal.ayudacampus.ui.soporte.AtenderTicketScreen
 import com.carbajal.ayudacampus.ui.soporte.BandejaScreen
+import com.carbajal.ayudacampus.ui.soporte.FormularioCategoriaScreen
 import com.carbajal.ayudacampus.ui.soporte.PanelScreen
+import com.carbajal.ayudacampus.viewmodel.AtenderViewModel
 import com.carbajal.ayudacampus.viewmodel.AyudaViewModelFactory
 import com.carbajal.ayudacampus.viewmodel.BandejaViewModel
+import com.carbajal.ayudacampus.viewmodel.CategoriasViewModel
 import com.carbajal.ayudacampus.viewmodel.MisTicketsViewModel
 import com.carbajal.ayudacampus.viewmodel.NuevoTicketViewModel
 import com.carbajal.ayudacampus.viewmodel.PanelViewModel
@@ -47,6 +51,13 @@ fun NavAyuda(
         correo = "juan@campus.test",
         clave = "1234",
         rol = Rol.CLIENTE.name
+    )
+    val usuarioSoporte = Usuario(
+        id = 2,
+        nombre = "Soporte TI",
+        correo = "soporte@campus.test",
+        clave = "admin",
+        rol = Rol.ADMIN.name
     )
     val nombreEstudiante = usuarioFinal.nombre.split(" ").firstOrNull() ?: "Meliton"
 
@@ -157,7 +168,7 @@ fun NavAyuda(
                     navController.navigate(Rutas.BANDEJA)
                 },
                 onIrCategorias = {
-                    // Navegar a categorías
+                    navController.navigate(Rutas.FORMULARIO_CATEGORIA)
                 },
                 onIrAjustes = {
                     // Navegar a ajustes
@@ -175,7 +186,7 @@ fun NavAyuda(
                     navController.popBackStack()
                 },
                 onAtenderTicket = { ticketId ->
-                    navController.navigate(Rutas.crearDetalleTicket(ticketId))
+                    navController.navigate(Rutas.crearAtenderTicket(ticketId))
                 },
                 onIrPanel = {
                     navController.navigate(Rutas.PANEL_SOPORTE) {
@@ -183,10 +194,54 @@ fun NavAyuda(
                     }
                 },
                 onIrCategorias = {
-                    // Navegar a categorías
+                    navController.navigate(Rutas.FORMULARIO_CATEGORIA)
                 },
                 onIrAjustes = {
                     // Navegar a ajustes
+                }
+            )
+        }
+
+        composable(
+            route = Rutas.ATENDER_TICKET,
+            arguments = listOf(navArgument("ticketId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val ticketId = backStackEntry.arguments?.getInt("ticketId") ?: 1
+            val atenderViewModel: AtenderViewModel = viewModel(
+                factory = AyudaViewModelFactory(
+                    repository = app.repository,
+                    preferenciasStore = app.preferenciasStore,
+                    ticketId = ticketId
+                )
+            )
+            AtenderTicketScreen(
+                viewModel = atenderViewModel,
+                usuarioSoporte = usuarioSoporte,
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onIrPanel = {
+                    navController.navigate(Rutas.PANEL_SOPORTE) {
+                        popUpTo(Rutas.PANEL_SOPORTE) { inclusive = true }
+                    }
+                },
+                onIrCategorias = {
+                    navController.navigate(Rutas.FORMULARIO_CATEGORIA)
+                },
+                onIrAjustes = {
+                    // Navegar a ajustes
+                }
+            )
+        }
+
+        composable(Rutas.FORMULARIO_CATEGORIA) {
+            val categoriasViewModel: CategoriasViewModel = viewModel(
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore)
+            )
+            FormularioCategoriaScreen(
+                viewModel = categoriasViewModel,
+                onVolver = {
+                    navController.popBackStack()
                 }
             )
         }

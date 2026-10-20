@@ -10,6 +10,7 @@ object Rutas {
     const val PANEL_SOPORTE = "panel_soporte"
     const val ATENDER_TICKET = "atender_ticket/{ticketId}"
     const val CATEGORIAS = "categorias"
+    const val FORMULARIO_CATEGORIA = "formulario_categoria"
     const val AJUSTES = "ajustes"
 
     fun crearDetalleTicket(ticketId: Int) = "detalle_ticket/$ticketId"
