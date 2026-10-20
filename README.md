@@ -54,14 +54,15 @@ graph TD
 ## 📸 Capturas de Pantalla
 
 ### 👤 Perfil Estudiante (Cliente)
-| 1. Inicio de Sesión | 2. Mis Tickets | 3. Nuevo Ticket |
+| 1. Perfil | 2. Mis Tickets | 3. Nuevo Ticket |
 | :---: | :---: | :---: |
-| ![Login Estudiante](app/src/main/res/mipmap-hdpi/ic_launcher.png) | ![Mis Tickets](app/src/main/res/mipmap-hdpi/ic_launcher.png) | ![Nuevo Ticket](app/src/main/res/mipmap-hdpi/ic_launcher.png) |
+|<img width="250" height="500" alt="WhatsApp Image 2026-10-20 at 01 25 00" src="https://github.com/user-attachments/assets/65e23edb-f134-4fdc-811f-1ddfa239a35a" />|<img width="250" height="500" alt="WhatsApp Image 2026-10-20 at 01 25 42" src="https://github.com/user-attachments/assets/85f32255-bbc4-4d32-a95b-260bd1fe6f6e" />|<img width="250" height="500" alt="WhatsApp Image 2026-10-20 at 01 27 04" src="https://github.com/user-attachments/assets/37dcb1ad-4ccb-4b1d-a39b-e6f96b6fbf9a" />|
+
 
 ### 🛠️ Perfil Soporte TI (Admin)
-| 4. Panel de Soporte | 5. Bandeja de Tickets | 6. Atender Ticket |
+| 4. Panel de Ajustes | 5. Panel de Soporte | 6. Atender Ticket |
 | :---: | :---: | :---: |
-| ![Panel Soporte](app/src/main/res/mipmap-hdpi/ic_launcher.png) | ![Bandeja Tickets](app/src/main/res/mipmap-hdpi/ic_launcher.png) | ![Atender Ticket](app/src/main/res/mipmap-hdpi/ic_launcher.png) |
+|<img width="250" height="500" alt="WhatsApp Image 2026-10-20 at 01 25 42(1)" src="https://github.com/user-attachments/assets/f23666dd-456d-4db1-9737-80a0b75fc8b6" />|<img width="250" height="500" alt="WhatsApp Image 2026-10-20 at 01 23 52" src="https://github.com/user-attachments/assets/815e3e15-80e4-400c-b0f8-582751b9b47d" />|<img width="250" height="500" alt="WhatsApp Image 2026-10-20 at 01 23 52(1)" src="https://github.com/user-attachments/assets/7197c9a9-6f83-4040-a1f7-a7d34adde1b8" />|
 
 ---
 
