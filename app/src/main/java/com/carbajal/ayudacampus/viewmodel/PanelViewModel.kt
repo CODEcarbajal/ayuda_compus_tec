@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-
+import java.util.Locale
 
 class PanelViewModel(
     private val repository: AyudaRepository
@@ -52,4 +52,20 @@ class PanelViewModel(
     // Tickets ALTA abiertos con más de 1 hora sin atender (haceHoras(1) = System.currentTimeMillis() - 3600000)
     val altasSinAtender: StateFlow<Int> = repository.observarAltasSinAtender(System.currentTimeMillis() - 3600000)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    // Tiempo promedio de resolución formateado
+    val tiempoPromedioText: StateFlow<String> = repository.observarTiempoPromedioResolucion()
+        .map { promedioMs ->
+            if (promedioMs == null || promedioMs <= 0) {
+                "N/A"
+            } else {
+                val horas = promedioMs / (1000.0 * 3600.0)
+                if (horas < 1) {
+                    val minutos = (promedioMs / (1000.0 * 60.0)).toInt()
+                    "$minutos min"
+                } else {
+                    String.format(Locale.getDefault(), "%.1f hrs", horas)
+                }
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "N/A")
 }

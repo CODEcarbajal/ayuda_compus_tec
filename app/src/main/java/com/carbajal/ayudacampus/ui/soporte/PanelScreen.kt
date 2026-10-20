@@ -56,6 +56,7 @@ fun PanelScreen(
     val porEstado by viewModel.porEstado.collectAsState()
     val porCategoria by viewModel.porCategoria.collectAsState()
     val altasSinAtender by viewModel.altasSinAtender.collectAsState()
+    val tiempoPromedioText by viewModel.tiempoPromedioText.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -205,6 +206,45 @@ fun PanelScreen(
             }
 
             Spacer(modifier = Modifier.height(20.dp))
+
+            // Tarjeta Tiempo Promedio de Resolución
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(16.dp))
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = "Tiempo promedio de resolución",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF111827)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Basado en tickets cerrados",
+                            fontSize = 12.sp,
+                            color = Color(0xFF6B7280)
+                        )
+                    }
+
+                    Text(
+                        text = tiempoPromedioText,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ColorSoporte
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Tarjeta Gráfico Dona (Por Estado)
             Surface(

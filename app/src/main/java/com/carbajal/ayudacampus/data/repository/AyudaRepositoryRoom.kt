@@ -114,4 +114,8 @@ class AyudaRepositoryRoom (
     override fun observarAltasSinAtender(limite: Long): Flow<Int> {
         return ticketDao.contarAltasSinAtender(limite)
     }
+
+    override fun observarTiempoPromedioResolucion(): Flow<Double?> {
+        return ticketDao.observarTiempoPromedioResolucion()
+    }
 }
