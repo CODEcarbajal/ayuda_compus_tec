@@ -25,6 +25,12 @@ class AyudaViewModelFactory(
         if (modelClass.isAssignableFrom(TicketDetalleViewModel::class.java)) {
             return TicketDetalleViewModel(ticketId, repository) as T
         }
+        if (modelClass.isAssignableFrom(PanelViewModel::class.java)) {
+            return PanelViewModel(repository) as T
+        }
+        if (modelClass.isAssignableFrom(BandejaViewModel::class.java)) {
+            return BandejaViewModel(repository) as T
+        }
         throw IllegalArgumentException("Clase ViewModel desconocida: ${modelClass.name}")
     }
 }

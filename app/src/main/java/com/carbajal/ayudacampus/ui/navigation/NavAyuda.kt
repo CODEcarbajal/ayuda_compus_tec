@@ -1,14 +1,9 @@
 package com.carbajal.ayudacampus.ui.navigation
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -24,9 +19,13 @@ import com.carbajal.ayudacampus.ui.cliente.DetalleTicketScreen
 import com.carbajal.ayudacampus.ui.cliente.LoginScreen
 import com.carbajal.ayudacampus.ui.cliente.MisTicketsScreen
 import com.carbajal.ayudacampus.ui.cliente.NuevoTicketScreen
+import com.carbajal.ayudacampus.ui.soporte.BandejaScreen
+import com.carbajal.ayudacampus.ui.soporte.PanelScreen
 import com.carbajal.ayudacampus.viewmodel.AyudaViewModelFactory
+import com.carbajal.ayudacampus.viewmodel.BandejaViewModel
 import com.carbajal.ayudacampus.viewmodel.MisTicketsViewModel
 import com.carbajal.ayudacampus.viewmodel.NuevoTicketViewModel
+import com.carbajal.ayudacampus.viewmodel.PanelViewModel
 import com.carbajal.ayudacampus.viewmodel.SesionViewModel
 import com.carbajal.ayudacampus.viewmodel.TicketDetalleViewModel
 
@@ -149,12 +148,47 @@ fun NavAyuda(
         }
 
         composable(Rutas.PANEL_SOPORTE) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Pantalla de Panel de Soporte (TI)")
-            }
+            val panelViewModel: PanelViewModel = viewModel(
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore)
+            )
+            PanelScreen(
+                viewModel = panelViewModel,
+                onVerBandeja = {
+                    navController.navigate(Rutas.BANDEJA)
+                },
+                onIrCategorias = {
+                    // Navegar a categorías
+                },
+                onIrAjustes = {
+                    // Navegar a ajustes
+                }
+            )
+        }
+
+        composable(Rutas.BANDEJA) {
+            val bandejaViewModel: BandejaViewModel = viewModel(
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore)
+            )
+            BandejaScreen(
+                viewModel = bandejaViewModel,
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onAtenderTicket = { ticketId ->
+                    navController.navigate(Rutas.crearDetalleTicket(ticketId))
+                },
+                onIrPanel = {
+                    navController.navigate(Rutas.PANEL_SOPORTE) {
+                        popUpTo(Rutas.PANEL_SOPORTE) { inclusive = true }
+                    }
+                },
+                onIrCategorias = {
+                    // Navegar a categorías
+                },
+                onIrAjustes = {
+                    // Navegar a ajustes
+                }
+            )
         }
     }
 }
