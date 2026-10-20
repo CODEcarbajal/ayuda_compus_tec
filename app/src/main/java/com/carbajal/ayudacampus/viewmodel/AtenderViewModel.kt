@@ -31,6 +31,9 @@ class AtenderViewModel(
     private val _nuevoRespuesta = MutableStateFlow("")
     val nuevoRespuesta: StateFlow<String> = _nuevoRespuesta.asStateFlow()
 
+    private val _esNotaInterna = MutableStateFlow(false)
+    val esNotaInterna: StateFlow<Boolean> = _esNotaInterna.asStateFlow()
+
     fun inicializarValores(estadoInicial: String, prioridadInicial: String) {
         if (_estadoSeleccionado.value == null) {
             _estadoSeleccionado.value = EstadoTicket.entries.find { it.name == estadoInicial } ?: EstadoTicket.ABIERTO
@@ -52,13 +55,18 @@ class AtenderViewModel(
         _nuevoRespuesta.value = texto
     }
 
+    fun actualizarEsNotaInterna(activado: Boolean) {
+        _esNotaInterna.value = activado
+    }
+
     fun enviarRespuesta(autor: Usuario) {
         val texto = _nuevoRespuesta.value.trim()
         if (texto.isBlank()) return
 
         viewModelScope.launch {
-            repository.agregarComentario(ticketId, autor, texto)
+            repository.agregarComentario(ticketId, autor, texto, esInterno = _esNotaInterna.value)
             _nuevoRespuesta.value = ""
+            _esNotaInterna.value = false
         }
     }
 

@@ -3,10 +3,17 @@ package com.carbajal.ayudacampus.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,10 +36,17 @@ fun BurbujaComentario(
     modifier: Modifier = Modifier
 ) {
     val alineacion = if (esMio) Alignment.End else Alignment.Start
-    val fondoColor = if (esMio) ColorCliente else Color(0xFFF3EFFE)
-    val textoColor = if (esMio) Color.White else Color(0xFF1F2937)
+    val fondoColor = when {
+        comentario.esInterno -> Color(0xFFFEF3C7)
+        esMio -> ColorCliente
+        else -> Color(0xFFF3EFFE)
+    }
+    val textoColor = when {
+        comentario.esInterno -> Color(0xFF92400E)
+        esMio -> Color.White
+        else -> Color(0xFF1F2937)
+    }
     val tituloHeader = if (esMio) "Tú" else comentario.autorNombre
-
     val horaFormateada = formatearHoraOFecha(comentario.fecha)
 
     Column(
@@ -41,14 +55,27 @@ fun BurbujaComentario(
             .padding(vertical = 4.dp),
         horizontalAlignment = alineacion
     ) {
-        // Cabecera con Autor y Hora
-        Text(
-            text = "$tituloHeader · $horaFormateada",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF6B7280),
+        // Cabecera con Autor, Hora y Candado si es Nota Interna
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 4.dp, start = 4.dp, end = 4.dp)
-        )
+        ) {
+            if (comentario.esInterno) {
+                Icon(
+                    imageVector = Icons.Outlined.Lock,
+                    contentDescription = "Nota interna",
+                    tint = Color(0xFFD97706),
+                    modifier = Modifier.size(13.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+            }
+            Text(
+                text = if (comentario.esInterno) "$tituloHeader · $horaFormateada (Nota interna)" else "$tituloHeader · $horaFormateada",
+                fontSize = 12.sp,
+                fontWeight = if (comentario.esInterno) FontWeight.Bold else FontWeight.Medium,
+                color = if (comentario.esInterno) Color(0xFFD97706) else Color(0xFF6B7280)
+            )
+        }
 
         // Burbuja de texto
         Box(

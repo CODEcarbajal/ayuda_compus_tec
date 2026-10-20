@@ -1,4 +1,5 @@
 package com.carbajal.ayudacampus.data.local.entity
+
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -26,5 +27,6 @@ data class Comentario(
     val autorNombre: String,
     val autorRol: String,
     val texto: String,
-    val fecha: Long = System.currentTimeMillis()
+    val fecha: Long = System.currentTimeMillis(),
+    val esInterno: Boolean = false
 )

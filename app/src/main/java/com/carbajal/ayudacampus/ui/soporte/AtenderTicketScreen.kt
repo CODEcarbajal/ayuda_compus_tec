@@ -24,6 +24,7 @@ import androidx.compose.material.icons.automirrored.filled.Segment
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.outlined.LocalOffer
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,6 +35,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -71,6 +74,7 @@ fun AtenderTicketScreen(
     val estadoSeleccionado by viewModel.estadoSeleccionado.collectAsState()
     val prioridadSeleccionada by viewModel.prioridadSeleccionada.collectAsState()
     val nuevoRespuesta by viewModel.nuevoRespuesta.collectAsState()
+    val esNotaInterna by viewModel.esNotaInterna.collectAsState()
 
     if (ticketConDetalle == null) {
         Box(
@@ -366,23 +370,56 @@ fun AtenderTicketScreen(
                 item { Spacer(modifier = Modifier.height(8.dp)) }
             }
 
+            // Interruptor para marcar como "Nota interna"
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Lock,
+                    contentDescription = "Nota interna",
+                    tint = if (esNotaInterna) Color(0xFFD97706) else Color(0xFF6B7280),
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "Nota interna (solo visible para soporte)",
+                    fontSize = 12.sp,
+                    color = if (esNotaInterna) Color(0xFFD97706) else Color(0xFF6B7280),
+                    fontWeight = if (esNotaInterna) FontWeight.Bold else FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(
+                    checked = esNotaInterna,
+                    onCheckedChange = { viewModel.actualizarEsNotaInterna(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Color(0xFFD97706),
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = Color(0xFFE5E7EB)
+                    )
+                )
+            }
+
             // Input Responder al cliente
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(bottom = 8.dp)
             ) {
                 OutlinedTextField(
                     value = nuevoRespuesta,
                     onValueChange = { viewModel.actualizarRespuesta(it) },
-                    placeholder = { Text("Responder al cliente...", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+                    placeholder = { Text(if (esNotaInterna) "Escribir nota interna..." else "Responder al cliente...", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(24.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedContainerColor = Color.White,
                         unfocusedContainerColor = Color.White,
-                        focusedBorderColor = ColorSoporte,
+                        focusedBorderColor = if (esNotaInterna) Color(0xFFD97706) else ColorSoporte,
                         unfocusedBorderColor = Color(0xFFE5E7EB)
                     )
                 )
@@ -394,7 +431,7 @@ fun AtenderTicketScreen(
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(
-                            if (nuevoRespuesta.isNotBlank()) ColorSoporte else Color(0xFFE5E7EB)
+                            if (nuevoRespuesta.isNotBlank()) (if (esNotaInterna) Color(0xFFD97706) else ColorSoporte) else Color(0xFFE5E7EB)
                         )
                         .clickable(enabled = nuevoRespuesta.isNotBlank()) {
                             viewModel.enviarRespuesta(usuarioSoporte)

@@ -327,9 +327,9 @@ fun DetalleTicketScreen(
                     )
                 }
 
-                // Burbujas de Comentarios
+                // Burbujas de Comentarios (Filtra notas internas para el estudiante)
                 items(
-                    items = item.comentarios,
+                    items = item.comentarios.filter { !it.esInterno },
                     key = { it.id }
                 ) { comentario ->
                     val esMio = comentario.autorId == usuarioActual.id
