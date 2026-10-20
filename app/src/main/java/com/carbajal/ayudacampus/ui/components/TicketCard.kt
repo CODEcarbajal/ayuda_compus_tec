@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.carbajal.ayudacampus.data.local.relation.TicketConDetalle
 import com.carbajal.ayudacampus.model.EstadoTicket
 import com.carbajal.ayudacampus.model.Prioridad
+import com.carbajal.ayudacampus.model.calcularSla
 import com.carbajal.ayudacampus.ui.theme.ColorCliente
 
 @Composable
@@ -49,7 +50,6 @@ fun TicketCard(
     val ticket = ticketConDetalle.ticket
     val categoria = ticketConDetalle.categoria
 
-    // Color de la barra vertical lateral según la prioridad o estado
     val colorBarraLateral = when {
         ticket.estado.equals(EstadoTicket.RESUELTO.name, ignoreCase = true) -> Color(0xFF9CA3AF)
         ticket.prioridad.equals(Prioridad.ALTA.name, ignoreCase = true) -> Color(0xFFDC2626)
@@ -57,7 +57,6 @@ fun TicketCard(
         else -> Color(0xFF9CA3AF)
     }
 
-    // Selección de ícono por categoría
     val iconoCategoria: ImageVector = when (categoria.icono.lowercase()) {
         "wifi" -> Icons.Default.Wifi
         "pc", "computer" -> Icons.Default.DesktopWindows
@@ -69,6 +68,7 @@ fun TicketCard(
 
     val idFormateado = String.format(java.util.Locale.getDefault(), "#%04d", ticket.id)
     val tiempoTexto = formatearTiempoRelativo(ticket.fecha)
+    val slaInfo = calcularSla(ticket.fecha, ticket.prioridad, ticket.estado)
 
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -83,7 +83,6 @@ fun TicketCard(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
         ) {
-            // Barra vertical indicadora a la izquierda
             Box(
                 modifier = Modifier
                     .width(5.dp)
@@ -97,7 +96,6 @@ fun TicketCard(
                     .padding(14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Ícono de la categoría en un recuadro azul claro
                 Box(
                     modifier = Modifier
                         .size(44.dp)
@@ -115,7 +113,6 @@ fun TicketCard(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // Información del ticket
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
@@ -136,7 +133,6 @@ fun TicketCard(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Fila de Chips y Tiempo
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -147,6 +143,10 @@ fun TicketCard(
                         Spacer(modifier = Modifier.width(6.dp))
 
                         PrioridadChip(prioridadNombre = ticket.prioridad)
+
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        SlaChip(slaInfo = slaInfo)
 
                         Spacer(modifier = Modifier.weight(1f))
 

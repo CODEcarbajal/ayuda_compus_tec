@@ -250,6 +250,9 @@ fun DetalleTicketScreen(
                                 ) {
                                     EstadoChip(estadoNombre = ticket.estado)
                                     PrioridadChip(prioridadNombre = ticket.prioridad)
+                                    com.carbajal.ayudacampus.ui.components.SlaChip(
+                                        slaInfo = com.carbajal.ayudacampus.model.calcularSla(ticket.fecha, ticket.prioridad, ticket.estado)
+                                    )
                                 }
 
                                 Text(
