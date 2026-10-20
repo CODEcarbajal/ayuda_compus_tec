@@ -1,5 +1,6 @@
 package com.carbajal.ayudacampus.ui.cliente
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.Segment
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -40,9 +43,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.carbajal.ayudacampus.AyudaApp
 import com.carbajal.ayudacampus.model.EstadoTicket
 import com.carbajal.ayudacampus.ui.components.TicketCard
 import com.carbajal.ayudacampus.ui.theme.ColorCliente
@@ -56,6 +61,10 @@ fun MisTicketsScreen(
     onVerDetalle: (Int) -> Unit = {},
     onIrPerfil: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val app = context.applicationContext as AyudaApp
+    val recibirTickets by app.preferenciasStore.recibirTickets.collectAsState(initial = true)
+
     val tickets by viewModel.tickets.collectAsState()
     val estadoFiltro by viewModel.estadoFiltro.collectAsState()
     val textoBusqueda by viewModel.textoBusqueda.collectAsState()
@@ -64,9 +73,15 @@ fun MisTicketsScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onCrearTicket,
+                onClick = {
+                    if (recibirTickets) {
+                        onCrearTicket()
+                    } else {
+                        Toast.makeText(context, "Mesa de ayuda cerrada", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 shape = CircleShape,
-                containerColor = ColorCliente,
+                containerColor = if (recibirTickets) ColorCliente else Color(0xFF9CA3AF),
                 contentColor = Color.White,
                 modifier = Modifier.size(56.dp)
             ) {
@@ -114,7 +129,13 @@ fun MisTicketsScreen(
                     // Opción Nuevo
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable { onCrearTicket() }
+                        modifier = Modifier.clickable {
+                            if (recibirTickets) {
+                                onCrearTicket()
+                            } else {
+                                Toast.makeText(context, "Mesa de ayuda cerrada", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -192,7 +213,37 @@ fun MisTicketsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Banner Aviso Mesa de ayuda cerrada
+            if (!recibirTickets) {
+                Surface(
+                    color = Color(0xFFFEE2E2),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = "Aviso",
+                            tint = Color(0xFFDC2626),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Mesa de ayuda cerrada",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF991B1B)
+                        )
+                    }
+                }
+            }
 
             // Buscador Redondeado
             OutlinedTextField(

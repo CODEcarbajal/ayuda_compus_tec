@@ -19,8 +19,11 @@ import com.carbajal.ayudacampus.ui.cliente.DetalleTicketScreen
 import com.carbajal.ayudacampus.ui.cliente.LoginScreen
 import com.carbajal.ayudacampus.ui.cliente.MisTicketsScreen
 import com.carbajal.ayudacampus.ui.cliente.NuevoTicketScreen
+import com.carbajal.ayudacampus.ui.cliente.PerfilScreen
+import com.carbajal.ayudacampus.ui.soporte.AjustesScreen
 import com.carbajal.ayudacampus.ui.soporte.AtenderTicketScreen
 import com.carbajal.ayudacampus.ui.soporte.BandejaScreen
+import com.carbajal.ayudacampus.ui.soporte.CategoriasScreen
 import com.carbajal.ayudacampus.ui.soporte.FormularioCategoriaScreen
 import com.carbajal.ayudacampus.ui.soporte.PanelScreen
 import com.carbajal.ayudacampus.viewmodel.AtenderViewModel
@@ -42,6 +45,7 @@ fun NavAyuda(
 ) {
     val context = LocalContext.current
     val app = context.applicationContext as AyudaApp
+    val perfilActivo by app.preferenciasStore.perfilActivo.collectAsState(initial = "")
     val usuarioActualState by sesionViewModel.usuarioActual.collectAsState()
 
     val clienteId = usuarioActualState?.id ?: 1
@@ -61,9 +65,15 @@ fun NavAyuda(
     )
     val nombreEstudiante = usuarioFinal.nombre.split(" ").firstOrNull() ?: "Meliton"
 
+    val inicio = when (perfilActivo) {
+        Rol.CLIENTE.name -> Rutas.MIS_TICKETS
+        Rol.ADMIN.name -> Rutas.PANEL_SOPORTE
+        else -> Rutas.LOGIN
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Rutas.LOGIN
+        startDestination = inicio
     ) {
         composable(Rutas.LOGIN) {
             LoginScreen(
@@ -96,7 +106,7 @@ fun NavAyuda(
                     navController.navigate(Rutas.crearDetalleTicket(ticketId))
                 },
                 onIrPerfil = {
-                    // Navegar a perfil
+                    navController.navigate(Rutas.PERFIL)
                 }
             )
         }
@@ -120,7 +130,7 @@ fun NavAyuda(
                     }
                 },
                 onIrPerfil = {
-                    // Navegar a perfil
+                    navController.navigate(Rutas.PERFIL)
                 }
             )
         }
@@ -153,7 +163,43 @@ fun NavAyuda(
                     navController.navigate(Rutas.NUEVO_TICKET)
                 },
                 onIrPerfil = {
-                    // Navegar a perfil
+                    navController.navigate(Rutas.PERFIL)
+                }
+            )
+        }
+
+        composable(Rutas.PERFIL) {
+            val misTicketsViewModel: MisTicketsViewModel = viewModel(
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore, clienteId = clienteId)
+            )
+            val ticketsState by misTicketsViewModel.tickets.collectAsState()
+
+            PerfilScreen(
+                usuario = usuarioFinal,
+                tickets = ticketsState,
+                preferenciasStore = app.preferenciasStore,
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onIrTickets = {
+                    navController.navigate(Rutas.MIS_TICKETS) {
+                        popUpTo(Rutas.MIS_TICKETS) { inclusive = true }
+                    }
+                },
+                onIrNuevoTicket = {
+                    navController.navigate(Rutas.NUEVO_TICKET)
+                },
+                onCambiarAPerfilSoporte = {
+                    navController.navigate(Rutas.PANEL_SOPORTE) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onCerrarSesion = {
+                    sesionViewModel.cerrarSesion {
+                        navController.navigate(Rutas.LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 }
             )
         }
@@ -168,10 +214,10 @@ fun NavAyuda(
                     navController.navigate(Rutas.BANDEJA)
                 },
                 onIrCategorias = {
-                    navController.navigate(Rutas.FORMULARIO_CATEGORIA)
+                    navController.navigate(Rutas.CATEGORIAS)
                 },
                 onIrAjustes = {
-                    // Navegar a ajustes
+                    navController.navigate(Rutas.AJUSTES)
                 }
             )
         }
@@ -194,10 +240,10 @@ fun NavAyuda(
                     }
                 },
                 onIrCategorias = {
-                    navController.navigate(Rutas.FORMULARIO_CATEGORIA)
+                    navController.navigate(Rutas.CATEGORIAS)
                 },
                 onIrAjustes = {
-                    // Navegar a ajustes
+                    navController.navigate(Rutas.AJUSTES)
                 }
             )
         }
@@ -226,10 +272,39 @@ fun NavAyuda(
                     }
                 },
                 onIrCategorias = {
-                    navController.navigate(Rutas.FORMULARIO_CATEGORIA)
+                    navController.navigate(Rutas.CATEGORIAS)
                 },
                 onIrAjustes = {
-                    // Navegar a ajustes
+                    navController.navigate(Rutas.AJUSTES)
+                }
+            )
+        }
+
+        composable(Rutas.CATEGORIAS) {
+            val categoriasViewModel: CategoriasViewModel = viewModel(
+                factory = AyudaViewModelFactory(app.repository, app.preferenciasStore)
+            )
+            CategoriasScreen(
+                viewModel = categoriasViewModel,
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onNuevaCategoria = {
+                    navController.navigate(Rutas.FORMULARIO_CATEGORIA)
+                },
+                onEditarCategoria = {
+                    navController.navigate(Rutas.FORMULARIO_CATEGORIA)
+                },
+                onIrPanel = {
+                    navController.navigate(Rutas.PANEL_SOPORTE) {
+                        popUpTo(Rutas.PANEL_SOPORTE) { inclusive = true }
+                    }
+                },
+                onIrBandeja = {
+                    navController.navigate(Rutas.BANDEJA)
+                },
+                onIrAjustes = {
+                    navController.navigate(Rutas.AJUSTES)
                 }
             )
         }
@@ -242,6 +317,38 @@ fun NavAyuda(
                 viewModel = categoriasViewModel,
                 onVolver = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Rutas.AJUSTES) {
+            AjustesScreen(
+                preferenciasStore = app.preferenciasStore,
+                onVolver = {
+                    navController.popBackStack()
+                },
+                onIrPanel = {
+                    navController.navigate(Rutas.PANEL_SOPORTE) {
+                        popUpTo(Rutas.PANEL_SOPORTE) { inclusive = true }
+                    }
+                },
+                onIrBandeja = {
+                    navController.navigate(Rutas.BANDEJA)
+                },
+                onIrCategorias = {
+                    navController.navigate(Rutas.CATEGORIAS)
+                },
+                onCambiarAPerfilEstudiante = {
+                    navController.navigate(Rutas.MIS_TICKETS) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onCerrarSesion = {
+                    sesionViewModel.cerrarSesion {
+                        navController.navigate(Rutas.LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 }
             )
         }

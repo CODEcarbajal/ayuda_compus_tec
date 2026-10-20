@@ -77,6 +77,10 @@ fun NuevoTicketScreen(
 
     val errorCategoria by viewModel.errorCategoria.collectAsState()
     val errorTitulo by viewModel.errorTitulo.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val app = context.applicationContext as com.carbajal.ayudacampus.AyudaApp
+    val recibirTickets by app.preferenciasStore.recibirTickets.collectAsState(initial = true)
+
     val errorDescripcion by viewModel.errorDescripcion.collectAsState()
     val cargando by viewModel.cargando.collectAsState()
 
@@ -382,9 +386,14 @@ fun NuevoTicketScreen(
 
             // Botón Enviar Ticket
             AyudaButton(
-                text = if (cargando) "Enviando..." else "Enviar ticket",
-                onClick = { viewModel.enviarTicket(onExito = onTicketEnviado) },
-                containerColor = ColorCliente,
+                text = if (!recibirTickets) "Mesa de ayuda cerrada" else if (cargando) "Enviando..." else "Enviar ticket",
+                onClick = {
+                    if (recibirTickets) {
+                        viewModel.enviarTicket(onExito = onTicketEnviado)
+                    }
+                },
+                enabled = recibirTickets && !cargando,
+                containerColor = if (recibirTickets) ColorCliente else Color(0xFF9CA3AF),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp)
