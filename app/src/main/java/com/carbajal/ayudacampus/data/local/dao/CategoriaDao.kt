@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CategoriaDao {
 
+    //Las consultas, en este espacio para insertar y listar categorias
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(categoria: Categoria): Long
 

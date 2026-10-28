@@ -13,6 +13,9 @@ class AyudaViewModelFactory(
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(SoportePerfilViewModel::class.java)) {
+            return SoportePerfilViewModel(repository) as T
+        }
         if (modelClass.isAssignableFrom(SesionViewModel::class.java)) {
             return SesionViewModel(repository, preferenciasStore) as T
         }

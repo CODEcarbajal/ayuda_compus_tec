@@ -1,6 +1,15 @@
 package com.carbajal.ayudacampus.ui.navigation
 
 import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flowOf
+import com.carbajal.ayudacampus.ui.cliente.NotificacionesScreen
+import com.carbajal.ayudacampus.ui.soporte.AgendaScreen
+import com.carbajal.ayudacampus.ui.soporte.HistorialActividadScreen
+import com.carbajal.ayudacampus.viewmodel.SoportePerfilViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,9 +57,33 @@ fun NavAyuda(
     val context = LocalContext.current
     val app = context.applicationContext as AyudaApp
     val perfilActivo by app.preferenciasStore.perfilActivo.collectAsState(initial = "")
+    val usuarioId by app.preferenciasStore.usuarioId.collectAsState(initial = 0)
     val usuarioActualState by sesionViewModel.usuarioActual.collectAsState()
 
-    val clienteId = usuarioActualState?.id ?: 1
+    val scope = rememberCoroutineScope()
+    val avisosFlow = remember(usuarioId, perfilActivo) {
+        if (usuarioId > 0 && perfilActivo.isNotBlank()) app.repository.observarNotificaciones(usuarioId, perfilActivo)
+        else flowOf(emptyList())
+    }
+    val avisos by androidx.compose.runtime.key(usuarioId, perfilActivo) {
+        avisosFlow.collectAsState(initial = emptyList())
+    }
+    val pendientes = avisos.count { !it.leida }
+    val avisosActivadosValor by app.preferenciasStore.notificaciones.collectAsState(initial = true)
+    val avisosActivados by androidx.compose.runtime.rememberUpdatedState(avisosActivadosValor)
+    // Solo los eventos nuevos de la sesión muestran un aviso inmediato; la bandeja siempre conserva el historial.
+    LaunchedEffect(usuarioId, perfilActivo) {
+        var ultimoId: Int? = null
+        avisosFlow.collect { lista ->
+            val nuevoId = lista.maxOfOrNull { it.id } ?: 0
+            if (ultimoId?.let { nuevoId > it } == true && avisosActivados) {
+                lista.firstOrNull()?.let { Toast.makeText(context, "${it.tituloTicket}: ${it.mensaje}", Toast.LENGTH_LONG).show() }
+            }
+            ultimoId = nuevoId
+        }
+    }
+
+    val clienteId = usuarioId.takeIf { it > 0 } ?: 1
     val usuarioFinal = usuarioActualState ?: Usuario(
         id = 1,
         nombre = "Meliton Carbajal",
@@ -77,6 +110,17 @@ fun NavAyuda(
         navController = navController,
         startDestination = inicio
     ) {
+        composable(Rutas.NOTIFICACIONES) {
+            NotificacionesScreen(notificaciones = avisos, onVolver = { navController.popBackStack() },
+                onAbrir = { aviso ->
+                    scope.launch {
+                        app.repository.marcarNotificacionLeida(aviso.id, usuarioId, perfilActivo)
+                        navController.navigate(if (perfilActivo == Rol.ADMIN.name)
+                            Rutas.crearAtenderTicket(aviso.ticketId) else Rutas.crearDetalleTicket(aviso.ticketId))
+                    }
+                },
+                onMarcarTodas = { scope.launch { app.repository.marcarNotificacionesLeidas(usuarioId, perfilActivo) } })
+        }
         composable(Rutas.WELCOME) {
             WelcomeScreen(
                 onComenzar = {
@@ -130,6 +174,8 @@ fun NavAyuda(
                 factory = AyudaViewModelFactory(app.repository, app.preferenciasStore, clienteId = clienteId)
             )
             MisTicketsScreen(
+                notificacionesPendientes = pendientes,
+                onIrNotificaciones = { navController.navigate(Rutas.NOTIFICACIONES) },
                 viewModel = misTicketsViewModel,
                 nombreEstudiante = nombreEstudiante,
                 onCrearTicket = {
@@ -208,6 +254,8 @@ fun NavAyuda(
             val ticketsState by misTicketsViewModel.tickets.collectAsState()
 
             PerfilScreen(
+                notificacionesPendientes = pendientes,
+                onIrNotificaciones = { navController.navigate(Rutas.NOTIFICACIONES) },
                 usuario = usuarioFinal,
                 tickets = ticketsState,
                 preferenciasStore = app.preferenciasStore,
@@ -242,6 +290,8 @@ fun NavAyuda(
                 factory = AyudaViewModelFactory(app.repository, app.preferenciasStore)
             )
             PanelScreen(
+                notificacionesPendientes = pendientes,
+                onIrNotificaciones = { navController.navigate(Rutas.NOTIFICACIONES) },
                 viewModel = panelViewModel,
                 onVerBandeja = {
                     navController.navigate(Rutas.BANDEJA)
@@ -354,8 +404,22 @@ fun NavAyuda(
             )
         }
 
+        composable(Rutas.AGENDA) {
+            val vm: SoportePerfilViewModel = viewModel(factory = app.viewModelFactory)
+            AgendaScreen(viewModel = vm, soporteId = usuarioId, onVolver = { navController.popBackStack() },
+                onTicket = { navController.navigate(Rutas.crearAtenderTicket(it)) })
+        }
+        composable(Rutas.HISTORIAL_ACTIVIDAD) {
+            val vm: SoportePerfilViewModel = viewModel(factory = app.viewModelFactory)
+            HistorialActividadScreen(viewModel = vm, onVolver = { navController.popBackStack() },
+                onTicket = { navController.navigate(Rutas.crearAtenderTicket(it)) })
+        }
         composable(Rutas.AJUSTES) {
             AjustesScreen(
+                notificacionesPendientes = pendientes,
+                onIrNotificaciones = { navController.navigate(Rutas.NOTIFICACIONES) },
+                onIrAgenda = { navController.navigate(Rutas.AGENDA) },
+                onIrHistorial = { navController.navigate(Rutas.HISTORIAL_ACTIVIDAD) },
                 preferenciasStore = app.preferenciasStore,
                 onVolver = {
                     navController.popBackStack()

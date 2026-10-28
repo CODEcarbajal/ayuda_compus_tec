@@ -62,6 +62,8 @@ fun PerfilScreen(
     usuario: Usuario,
     tickets: List<TicketConDetalle>,
     preferenciasStore: PreferenciasStore,
+    notificacionesPendientes: Int = 0,
+    onIrNotificaciones: () -> Unit = {},
     onVolver: () -> Unit = {},
     onIrTickets: () -> Unit = {},
     onIrNuevoTicket: () -> Unit = {},
@@ -99,7 +101,9 @@ fun PerfilScreen(
                     }
                 },
                 actions = {
-                    Spacer(modifier = Modifier.width(48.dp))
+                    com.carbajal.ayudacampus.ui.components.CampanaNotificaciones(
+                        pendientes = notificacionesPendientes, onClick = onIrNotificaciones
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )

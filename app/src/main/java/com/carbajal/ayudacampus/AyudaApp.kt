@@ -30,7 +30,8 @@ class AyudaApp : Application() {
         repository = AyudaRepositoryRoom(
             usuarioDao = database.usuarioDao(),
             categoriaDao = database.categoriaDao(),
-            ticketDao = database.ticketDao()
+            ticketDao = database.ticketDao(),
+            database = database
         )
         preferenciasStore = PreferenciasStore(this)
         viewModelFactory = AyudaViewModelFactory(repository, preferenciasStore)

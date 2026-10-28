@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TicketDao {
+
+    //En esta parte se consultan, para crear, cerrar y filtrar los tickets
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTicket(ticket: Ticket): Long
 

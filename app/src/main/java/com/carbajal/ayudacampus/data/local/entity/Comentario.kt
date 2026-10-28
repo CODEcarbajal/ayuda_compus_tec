@@ -19,6 +19,7 @@ import androidx.room.PrimaryKey
         Index("ticketId")
     ]
 )
+//define la estructura de la tabla de comentarios
 data class Comentario(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

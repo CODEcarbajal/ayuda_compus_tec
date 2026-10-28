@@ -18,6 +18,14 @@ class SesionViewModel(
     private val _usuarioActual = MutableStateFlow<Usuario?>(null)
     val usuarioActual: StateFlow<Usuario?> = _usuarioActual.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            preferenciasStore.usuarioId.collect { id ->
+                _usuarioActual.value = if (id > 0) repository.obtenerUsuario(id) else null
+            }
+        }
+    }
+
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 

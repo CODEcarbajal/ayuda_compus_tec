@@ -7,7 +7,10 @@ import androidx.room.Query
 import com.carbajal.ayudacampus.data.local.entity.Usuario
 
 @Dao
-interface UsuarioDao {
+//Al utilizar un Data Access Objects utilizamos una interfaz que convierte las funciones de kotlin en consultas SQL
+
+interface UsuarioDao {   //Utilizamos la interfaz para realizar las consultas para autenticar e insertar usuarios
+
     @Query("SELECT * FROM usuarios WHERE LOWER(correo) = LOWER(:correo) AND clave = :clave LIMIT 1")
     suspend fun login(correo: String, clave: String): Usuario?
 
@@ -19,6 +22,12 @@ interface UsuarioDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTodos(usuarios: List<Usuario>)
+
+    @Query("SELECT * FROM usuarios WHERE id = :id LIMIT 1")
+    suspend fun obtenerPorId(id: Int): Usuario?
+
+    @Query("SELECT * FROM usuarios WHERE rol = 'ADMIN'")
+    suspend fun obtenerSoportes(): List<Usuario>
 
     @Query("SELECT COUNT(*) FROM usuarios")
     suspend fun contar(): Int

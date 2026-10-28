@@ -73,3 +73,22 @@ graph TD
 * **4. Migración a servidor:** Solo se crearía una nueva implementación del repositorio (`AyudaRepositoryRemote`) usando Retrofit/Ktor, sin necesidad de modificar los ViewModels ni la interfaz visual.
 
 ---
+
+## Agenda e historial de Soporte TI
+
+Desde **Soporte TI → Ajustes → Herramientas de soporte**:
+
+- **Agenda de atención:** selecciona un ticket abierto o en proceso, fecha, hora, duración (30, 60 o 90 minutos), lugar o enlace e indicaciones. Se rechazan fechas pasadas y cruces con otras citas programadas del mismo técnico. Las citas pueden cancelarse o completarse una vez iniciadas y conservan su registro en «Todas».
+- **Historial de actividad:** consulta creaciones, comentarios (incluidas las notas internas de soporte), reaperturas y calificaciones, con autor, fecha y acceso al ticket. Incluye búsqueda y filtros por acción.
+
+La agenda se guarda localmente: el horario debe confirmarse con el estudiante. No envía invitaciones externas. La migración 3 → 4 conserva los datos y recupera las creaciones, comentarios y calificaciones existentes con sus fechas originales. Las reaperturas anteriores a esta versión no tenían fecha registrada y no se reconstruyen.
+
+Validación de estas funciones:
+
+```bash
+./gradlew :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest --offline
+# Con un emulador o dispositivo conectado:
+./gradlew :app:connectedDebugAndroidTest --offline
+```
+
+Las pruebas de soporte cubren validación de horarios, cruces, cancelaciones, historial, persistencia, migración y los flujos de las pantallas en tema claro/oscuro.

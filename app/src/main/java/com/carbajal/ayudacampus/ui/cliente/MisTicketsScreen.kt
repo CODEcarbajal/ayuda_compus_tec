@@ -55,6 +55,8 @@ import com.carbajal.ayudacampus.viewmodel.MisTicketsViewModel
 
 @Composable
 fun MisTicketsScreen(
+    notificacionesPendientes: Int = 0,
+    onIrNotificaciones: () -> Unit = {},
     viewModel: MisTicketsViewModel,
     nombreEstudiante: String = "Meliton",
     onCrearTicket: () -> Unit = {},
@@ -203,14 +205,9 @@ fun MisTicketsScreen(
                     )
                 }
 
-                IconButton(onClick = { /* Notificaciones */ }) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notificaciones",
-                        tint = Color(0xFF111827),
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
+                com.carbajal.ayudacampus.ui.components.CampanaNotificaciones(
+                    pendientes = notificacionesPendientes, onClick = onIrNotificaciones
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))

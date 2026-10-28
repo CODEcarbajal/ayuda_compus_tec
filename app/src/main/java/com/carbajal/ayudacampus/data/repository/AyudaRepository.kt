@@ -10,6 +10,16 @@ import com.carbajal.ayudacampus.model.Prioridad
 import kotlinx.coroutines.flow.Flow
 
 interface AyudaRepository {
+    suspend fun obtenerUsuario(id: Int): Usuario?
+    fun observarNotificaciones(usuarioId: Int, rol: String): Flow<List<com.carbajal.ayudacampus.data.local.entity.Notificacion>>
+    suspend fun marcarNotificacionLeida(id: Int, usuarioId: Int, rol: String)
+    suspend fun marcarNotificacionesLeidas(usuarioId: Int, rol: String)
+
+    fun observarCitas(): Flow<List<com.carbajal.ayudacampus.data.local.entity.CitaAtencion>>
+    fun observarActividad(): Flow<List<com.carbajal.ayudacampus.data.local.entity.ActividadTicket>>
+    suspend fun programarCita(cita: com.carbajal.ayudacampus.data.local.entity.CitaAtencion)
+    suspend fun cambiarEstadoCita(id: Int, estado: String)
+
     suspend fun login(correo: String, clave: String): Usuario?
     suspend fun registrar(nombre: String, correo: String, clave: String, rol: String): Result<Usuario>
     fun observarCategorias(): Flow<List<Categoria>>

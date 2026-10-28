@@ -7,10 +7,13 @@ import com.carbajal.ayudacampus.data.local.entity.Usuario
 import com.carbajal.ayudacampus.model.EstadoTicket
 import com.carbajal.ayudacampus.model.Prioridad
 import com.carbajal.ayudacampus.model.Rol
+import com.carbajal.ayudacampus.data.local.entity.ActividadTicket
+import kotlinx.coroutines.flow.first
+import androidx.room.withTransaction
 
 object DatosIniciales {
 
-    suspend fun sembrar(db: AyudaDatabase) {
+    suspend fun sembrar(db: AyudaDatabase) = db.withTransaction {
         // Solo sembrar si la base de datos no tiene usuarios
         if (db.usuarioDao().contar() == 0) {
 
@@ -172,6 +175,18 @@ object DatosIniciales {
                     fecha = haceHoras(2)
                 )
             )
+            // Registrar también las acciones de los datos de demostración con sus fechas originales.
+            db.ticketDao().observarTodos().first().forEach { detalle ->
+                db.soporteDao().insertarActividad(ActividadTicket(ticketId = detalle.ticket.id,
+                    tituloTicket = detalle.ticket.titulo, autorNombre = detalle.cliente.nombre,
+                    tipo = "CREACION", detalle = "Incidencia creada", fecha = detalle.ticket.fecha))
+                detalle.comentarios.forEach { comentario ->
+                    db.soporteDao().insertarActividad(ActividadTicket(ticketId = detalle.ticket.id,
+                        tituloTicket = detalle.ticket.titulo, autorNombre = comentario.autorNombre,
+                        tipo = "COMENTARIO", detalle = (if (comentario.esInterno) "Nota interna: " else "Comentario: ") + comentario.texto,
+                        fecha = comentario.fecha))
+                }
+            }
         }
     }
 }

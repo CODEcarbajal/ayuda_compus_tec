@@ -33,11 +33,15 @@ class PreferenciasStore(private val context: Context) {
         prefs[MODO_OSCURO] ?: false
     }
     val notificaciones: Flow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[NOTIFICACIONES] ?: true // Por defecto true
+        prefs[claveNotificaciones(prefs)] ?: prefs[NOTIFICACIONES] ?: true
     }
     val recibirTickets: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[RECIBIR_TICKETS] ?: true // Por defecto true
     }
+
+    private fun claveNotificaciones(prefs: Preferences) = booleanPreferencesKey(
+        "notificaciones_${prefs[PERFIL_ACTIVO].orEmpty()}_${prefs[USUARIO_ID] ?: 0}"
+    )
 
     suspend fun guardarSesion(rol: String, id: Int) {
         context.dataStore.edit { prefs ->
@@ -54,7 +58,7 @@ class PreferenciasStore(private val context: Context) {
 
     suspend fun guardarNotificaciones(activadas: Boolean) {
         context.dataStore.edit { prefs ->
-            prefs[NOTIFICACIONES] = activadas
+            prefs[claveNotificaciones(prefs)] = activadas
         }
     }
 

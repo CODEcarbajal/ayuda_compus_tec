@@ -13,6 +13,9 @@ object Rutas {
     const val ATENDER_TICKET = "atender_ticket/{ticketId}"
     const val CATEGORIAS = "categorias"
     const val FORMULARIO_CATEGORIA = "formulario_categoria"
+    const val AGENDA = "agenda_soporte"
+    const val HISTORIAL_ACTIVIDAD = "historial_actividad"
+    const val NOTIFICACIONES = "notificaciones"
     const val AJUSTES = "ajustes"
 
     fun crearDetalleTicket(ticketId: Int) = "detalle_ticket/$ticketId"

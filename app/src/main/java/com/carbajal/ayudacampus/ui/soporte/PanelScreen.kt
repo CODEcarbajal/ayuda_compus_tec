@@ -45,6 +45,8 @@ import com.carbajal.ayudacampus.viewmodel.PanelViewModel
 
 @Composable
 fun PanelScreen(
+    notificacionesPendientes: Int = 0,
+    onIrNotificaciones: () -> Unit = {},
     viewModel: PanelViewModel,
     onVerBandeja: () -> Unit = {},
     onIrCategorias: () -> Unit = {},
@@ -183,14 +185,9 @@ fun PanelScreen(
                         color = Color(0xFF6B7280)
                     )
                 }
-                IconButton(onClick = { /* Notificaciones */ }) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notificaciones",
-                        tint = Color(0xFF111827),
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
+                com.carbajal.ayudacampus.ui.components.CampanaNotificaciones(
+                    pendientes = notificacionesPendientes, onClick = onIrNotificaciones
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

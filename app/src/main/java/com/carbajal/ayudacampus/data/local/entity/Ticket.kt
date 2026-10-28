@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.RESTRICT
         )
     ],
-    indices = [
+    indices = [  //Nos permiten filtrar los datos de la tabla
         Index("clienteId"),
         Index("categoriaId")
     ]

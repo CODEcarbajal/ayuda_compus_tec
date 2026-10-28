@@ -59,6 +59,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun AjustesScreen(
     preferenciasStore: PreferenciasStore,
+    notificacionesPendientes: Int = 0,
+    onIrNotificaciones: () -> Unit = {},
+    onIrAgenda: () -> Unit = {},
+    onIrHistorial: () -> Unit = {},
     onVolver: () -> Unit = {},
     onIrPanel: () -> Unit = {},
     onIrBandeja: () -> Unit = {},
@@ -94,7 +98,9 @@ fun AjustesScreen(
                     }
                 },
                 actions = {
-                    Spacer(modifier = Modifier.width(48.dp))
+                    com.carbajal.ayudacampus.ui.components.CampanaNotificaciones(
+                        pendientes = notificacionesPendientes, onClick = onIrNotificaciones
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
@@ -244,6 +250,28 @@ fun AjustesScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            Text("Herramientas de soporte", style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground)
+            Spacer(modifier = Modifier.height(10.dp))
+            Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp))) {
+                Column(modifier = Modifier.padding(8.dp)) {
+                    androidx.compose.material3.TextButton(onClick = onIrAgenda, modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                            Text("Agenda de atención", color = ColorSoporte, fontWeight = FontWeight.Bold)
+                            Text("Programar visitas y coordinar horarios", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                    androidx.compose.material3.TextButton(onClick = onIrHistorial, modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                            Text("Historial de actividad", color = ColorSoporte, fontWeight = FontWeight.Bold)
+                            Text("Creaciones, comentarios, reaperturas y calificaciones", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+
             // Botón Cambiar de Perfil (Modo Práctica)
             Surface(
                 shape = RoundedCornerShape(16.dp),
@@ -366,7 +394,7 @@ fun AjustesScreen(
                         Column {
                             Text("Notificaciones", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                             Spacer(modifier = Modifier.height(2.dp))
-                            Text("Avisar tickets nuevos", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Avisar cambios de estado", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Switch(
                             checked = notificaciones,
