@@ -55,7 +55,10 @@ fun LoginScreen(
     var clave by remember { mutableStateOf("1234") }
 
     val error by viewModel.error.collectAsState()
-    val colorRol = if (rolSeleccionado == Rol.CLIENTE) ColorCliente else ColorSoporte
+    val colorRol = when (rolSeleccionado) {
+        Rol.CLIENTE -> ColorCliente
+        Rol.ADMIN, Rol.GERENTE -> ColorSoporte
+    }
 
     Column(
         modifier = Modifier
@@ -84,7 +87,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Selector de Rol (Estudiante | Soporte TI)
+        // Selector de Rol (Estudiante | Soporte TI | Gerente)
         Surface(
             color = ColorFondoSelector,
             shape = RoundedCornerShape(16.dp),
@@ -94,13 +97,13 @@ fun LoginScreen(
                 modifier = Modifier.padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val esEstudiante = rolSeleccionado == Rol.CLIENTE
+                val rolActual = rolSeleccionado
 
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(if (esEstudiante) ColorCliente else Color.Transparent)
+                        .background(if (rolActual == Rol.CLIENTE) ColorCliente else Color.Transparent)
                         .clickable {
                             rolSeleccionado = Rol.CLIENTE
                             correo = "meliton@campus.test"
@@ -112,9 +115,9 @@ fun LoginScreen(
                 ) {
                     Text(
                         text = "Estudiante",
-                        color = if (esEstudiante) Color.White else Color(0xFF4B5563),
-                        fontWeight = if (esEstudiante) FontWeight.Bold else FontWeight.Medium,
-                        fontSize = 14.sp
+                        color = if (rolActual == Rol.CLIENTE) Color.White else Color(0xFF4B5563),
+                        fontWeight = if (rolActual == Rol.CLIENTE) FontWeight.Bold else FontWeight.Medium,
+                        fontSize = 12.sp
                     )
                 }
 
@@ -122,7 +125,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(if (!esEstudiante) ColorSoporte else Color.Transparent)
+                        .background(if (rolActual == Rol.ADMIN) ColorSoporte else Color.Transparent)
                         .clickable {
                             rolSeleccionado = Rol.ADMIN
                             correo = "soporte@campus.test"
@@ -134,9 +137,31 @@ fun LoginScreen(
                 ) {
                     Text(
                         text = "Soporte TI",
-                        color = if (!esEstudiante) Color.White else Color(0xFF4B5563),
-                        fontWeight = if (!esEstudiante) FontWeight.Bold else FontWeight.Medium,
-                        fontSize = 14.sp
+                        color = if (rolActual == Rol.ADMIN) Color.White else Color(0xFF4B5563),
+                        fontWeight = if (rolActual == Rol.ADMIN) FontWeight.Bold else FontWeight.Medium,
+                        fontSize = 12.sp
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (rolActual == Rol.GERENTE) ColorSoporte else Color.Transparent)
+                        .clickable {
+                            rolSeleccionado = Rol.GERENTE
+                            correo = "gerente@campus.test"
+                            clave = "gerente"
+                            viewModel.limpiarError()
+                        }
+                        .padding(vertical = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Gerente",
+                        color = if (rolActual == Rol.GERENTE) Color.White else Color(0xFF4B5563),
+                        fontWeight = if (rolActual == Rol.GERENTE) FontWeight.Bold else FontWeight.Medium,
+                        fontSize = 12.sp
                     )
                 }
             }

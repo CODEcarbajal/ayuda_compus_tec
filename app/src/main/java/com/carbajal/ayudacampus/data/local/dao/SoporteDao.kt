@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SoporteDao {
-    @Query("SELECT COUNT(*) FROM usuarios WHERE id = :id AND rol = 'ADMIN'")
+    @Query("SELECT COUNT(*) FROM usuarios WHERE id = :id AND rol IN ('ADMIN', 'GERENTE')")
     suspend fun contarTecnico(id: Int): Int
     @Insert suspend fun insertarActividad(actividad: ActividadTicket)
     @Insert suspend fun insertarCita(cita: CitaAtencion)

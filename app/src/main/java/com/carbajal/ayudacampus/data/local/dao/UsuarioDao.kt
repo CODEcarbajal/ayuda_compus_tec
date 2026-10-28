@@ -26,7 +26,7 @@ interface UsuarioDao {   //Utilizamos la interfaz para realizar las consultas pa
     @Query("SELECT * FROM usuarios WHERE id = :id LIMIT 1")
     suspend fun obtenerPorId(id: Int): Usuario?
 
-    @Query("SELECT * FROM usuarios WHERE rol = 'ADMIN'")
+    @Query("SELECT * FROM usuarios WHERE rol IN ('ADMIN', 'GERENTE')")
     suspend fun obtenerSoportes(): List<Usuario>
 
     @Query("SELECT COUNT(*) FROM usuarios")

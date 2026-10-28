@@ -102,7 +102,7 @@ fun NavAyuda(
 
     val inicio = when (perfilActivo) {
         Rol.CLIENTE.name -> Rutas.MIS_TICKETS
-        Rol.ADMIN.name -> Rutas.PANEL_SOPORTE
+        Rol.ADMIN.name, Rol.GERENTE.name -> Rutas.PANEL_SOPORTE
         else -> Rutas.WELCOME
     }
 

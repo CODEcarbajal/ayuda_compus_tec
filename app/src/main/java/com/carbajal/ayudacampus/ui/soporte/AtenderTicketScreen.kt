@@ -360,7 +360,7 @@ fun AtenderTicketScreen(
                     items = item.comentarios,
                     key = { it.id }
                 ) { com ->
-                    val esSoporte = com.autorRol == Rol.ADMIN.name
+                    val esSoporte = com.autorRol == Rol.ADMIN.name || com.autorRol == Rol.GERENTE.name
                     BurbujaComentario(
                         comentario = com,
                         esMio = esSoporte

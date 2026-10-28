@@ -42,7 +42,14 @@ object DatosIniciales {
                 clave = "admin",
                 rol = Rol.ADMIN.name
             )
-            db.usuarioDao().insertarTodos(listOf(estudiante, soporte))
+            val gerente = Usuario(
+                id = 3,
+                nombre = "Gerente",
+                correo = "gerente@campus.test",
+                clave = "gerente",
+                rol = Rol.GERENTE.name
+            )
+            db.usuarioDao().insertarTodos(listOf(estudiante, soporte, gerente))
 
             // Helper para calcular tiempos relativos en milisegundos
             val ahora = System.currentTimeMillis()
