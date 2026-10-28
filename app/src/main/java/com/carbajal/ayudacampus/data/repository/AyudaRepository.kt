@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AyudaRepository {
     suspend fun login(correo: String, clave: String): Usuario?
+    suspend fun registrar(nombre: String, correo: String, clave: String, rol: String): Result<Usuario>
     fun observarCategorias(): Flow<List<Categoria>>
     fun observarCategoriasActivas(): Flow<List<Categoria>>
     suspend fun guardarCategoria(c: Categoria)

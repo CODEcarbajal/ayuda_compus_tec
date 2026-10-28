@@ -27,8 +27,8 @@ object DatosIniciales {
             // 2. Usuarios de prueba
             val estudiante = Usuario(
                 id = 1,
-                nombre = "Juan Pérez",
-                correo = "juan@campus.test",
+                nombre = "Meliton Carbajal",
+                correo = "meliton@campus.test",
                 clave = "1234",
                 rol = Rol.CLIENTE.name
             )

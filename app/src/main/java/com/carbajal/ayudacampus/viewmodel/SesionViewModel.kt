@@ -45,6 +45,25 @@ class SesionViewModel(
         }
     }
 
+    fun registrar(nombre: String, correo: String, clave: String, rolSeleccionado: Rol, onExito: (String) -> Unit) {
+        if (nombre.isBlank() || correo.isBlank() || clave.isBlank()) {
+            _error.value = "Por favor, completa todos los campos"
+            return
+        }
+        viewModelScope.launch {
+            _error.value = null
+            val resultado = repository.registrar(nombre.trim(), correo.trim(), clave.trim(), rolSeleccionado.name)
+            
+            resultado.onSuccess { usuario ->
+                _usuarioActual.value = usuario
+                preferenciasStore.guardarSesion(usuario.rol, usuario.id)
+                onExito(usuario.rol)
+            }.onFailure { ex ->
+                _error.value = ex.message ?: "Error al registrar usuario"
+            }
+        }
+    }
+
     fun limpiarError(){
         _error.value = null
     }

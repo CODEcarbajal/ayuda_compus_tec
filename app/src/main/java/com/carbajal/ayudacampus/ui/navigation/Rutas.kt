@@ -1,7 +1,9 @@
 package com.carbajal.ayudacampus.ui.navigation
 
 object Rutas {
+    const val WELCOME = "welcome"
     const val LOGIN = "login"
+    const val REGISTER = "register"
     const val MIS_TICKETS = "mis_tickets"
     const val NUEVO_TICKET = "nuevo_ticket"
     const val DETALLE_TICKET = "detalle_ticket/{ticketId}"

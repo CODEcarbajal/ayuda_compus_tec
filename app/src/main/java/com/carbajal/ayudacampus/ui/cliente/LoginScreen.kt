@@ -47,10 +47,11 @@ import com.carbajal.ayudacampus.viewmodel.SesionViewModel
 @Composable
 fun LoginScreen(
     viewModel: SesionViewModel,
-    onLoginExitoso: (String) -> Unit
+    onLoginExitoso: (String) -> Unit,
+    onIrRegistro: () -> Unit
 ) {
     var rolSeleccionado by remember { mutableStateOf(Rol.CLIENTE) }
-    var correo by remember { mutableStateOf("juan@campus.test") }
+    var correo by remember { mutableStateOf("meliton@campus.test") }
     var clave by remember { mutableStateOf("1234") }
 
     val error by viewModel.error.collectAsState()
@@ -102,7 +103,7 @@ fun LoginScreen(
                         .background(if (esEstudiante) ColorCliente else Color.Transparent)
                         .clickable {
                             rolSeleccionado = Rol.CLIENTE
-                            correo = "juan@campus.test"
+                            correo = "meliton@campus.test"
                             clave = "1234"
                             viewModel.limpiarError()
                         }
@@ -229,7 +230,10 @@ fun LoginScreen(
                         }
                     },
                     fontSize = 14.sp,
-                    modifier = Modifier.clickable { /* Registro */ }
+                    modifier = Modifier.clickable { 
+                        viewModel.limpiarError()
+                        onIrRegistro() 
+                    }
                 )
             }
         } else {

@@ -20,6 +20,8 @@ import com.carbajal.ayudacampus.ui.cliente.LoginScreen
 import com.carbajal.ayudacampus.ui.cliente.MisTicketsScreen
 import com.carbajal.ayudacampus.ui.cliente.NuevoTicketScreen
 import com.carbajal.ayudacampus.ui.cliente.PerfilScreen
+import com.carbajal.ayudacampus.ui.cliente.RegisterScreen
+import com.carbajal.ayudacampus.ui.cliente.WelcomeScreen
 import com.carbajal.ayudacampus.ui.soporte.AjustesScreen
 import com.carbajal.ayudacampus.ui.soporte.AtenderTicketScreen
 import com.carbajal.ayudacampus.ui.soporte.BandejaScreen
@@ -51,8 +53,8 @@ fun NavAyuda(
     val clienteId = usuarioActualState?.id ?: 1
     val usuarioFinal = usuarioActualState ?: Usuario(
         id = 1,
-        nombre = "Juan Pérez",
-        correo = "juan@campus.test",
+        nombre = "Meliton Carbajal",
+        correo = "meliton@campus.test",
         clave = "1234",
         rol = Rol.CLIENTE.name
     )
@@ -68,13 +70,24 @@ fun NavAyuda(
     val inicio = when (perfilActivo) {
         Rol.CLIENTE.name -> Rutas.MIS_TICKETS
         Rol.ADMIN.name -> Rutas.PANEL_SOPORTE
-        else -> Rutas.LOGIN
+        else -> Rutas.WELCOME
     }
 
     NavHost(
         navController = navController,
         startDestination = inicio
     ) {
+        composable(Rutas.WELCOME) {
+            WelcomeScreen(
+                onComenzar = {
+                    navController.navigate(Rutas.REGISTER)
+                },
+                onYaTengoCuenta = {
+                    navController.navigate(Rutas.LOGIN)
+                }
+            )
+        }
+
         composable(Rutas.LOGIN) {
             LoginScreen(
                 viewModel = sesionViewModel,
@@ -86,6 +99,26 @@ fun NavAyuda(
                         Rutas.PANEL_SOPORTE
                     }
                     navController.navigate(destino) {
+                        popUpTo(Rutas.LOGIN) { inclusive = true }
+                    }
+                },
+                onIrRegistro = {
+                    navController.navigate(Rutas.REGISTER)
+                }
+            )
+        }
+
+        composable(Rutas.REGISTER) {
+            RegisterScreen(
+                viewModel = sesionViewModel,
+                onRegistroExitoso = { _ ->
+                    Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                    navController.navigate(Rutas.MIS_TICKETS) {
+                        popUpTo(Rutas.LOGIN) { inclusive = true }
+                    }
+                },
+                onIrLogin = {
+                    navController.navigate(Rutas.LOGIN) {
                         popUpTo(Rutas.LOGIN) { inclusive = true }
                     }
                 }
@@ -196,7 +229,7 @@ fun NavAyuda(
                 },
                 onCerrarSesion = {
                     sesionViewModel.cerrarSesion {
-                        navController.navigate(Rutas.LOGIN) {
+                        navController.navigate(Rutas.WELCOME) {
                             popUpTo(0) { inclusive = true }
                         }
                     }
@@ -345,7 +378,7 @@ fun NavAyuda(
                 },
                 onCerrarSesion = {
                     sesionViewModel.cerrarSesion {
-                        navController.navigate(Rutas.LOGIN) {
+                        navController.navigate(Rutas.WELCOME) {
                             popUpTo(0) { inclusive = true }
                         }
                     }

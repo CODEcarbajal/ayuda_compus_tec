@@ -22,6 +22,22 @@ class AyudaRepositoryRoom (
     override suspend fun login(correo: String, clave: String): Usuario? {
         return usuarioDao.login(correo, clave)
     }
+    
+    override suspend fun registrar(nombre: String, correo: String, clave: String, rol: String): Result<Usuario> {
+        val existente = usuarioDao.obtenerPorCorreo(correo)
+        if (existente != null) {
+            return Result.failure(Exception("El correo ya está registrado"))
+        }
+        val nuevo = Usuario(
+            nombre = nombre,
+            correo = correo,
+            clave = clave,
+            rol = rol
+        )
+        val id = usuarioDao.insertar(nuevo)
+        return Result.success(nuevo.copy(id = id.toInt()))
+    }
+    
     override fun observarCategorias(): Flow<List<Categoria>> {
         return categoriaDao.observarTodas()
     }

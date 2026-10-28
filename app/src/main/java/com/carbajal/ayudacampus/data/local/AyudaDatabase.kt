@@ -19,7 +19,7 @@ import com.carbajal.ayudacampus.data.local.entity.Usuario
         Ticket::class,
         Comentario::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AyudaDatabase: RoomDatabase(){
